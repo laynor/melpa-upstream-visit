@@ -69,20 +69,39 @@
 (defun* muv::wiki-kludge (package-name &key fetcher &allow-other-keys)
   (and (eq fetcher 'github) (format "http://www.emacswiki.org/%s.el" package-name)))
 
-(defun* muv::savannah-kludge (package-name &key fetcher url &allow-other-keys)
-  (and (string-match "savannah\\.nongnu\\.org" url)
-       (format "savannah.nongnu.org/projects/%s/" package-name)))
+(defun* muv::savannah-git-kludge (package-name &key fetcher url &allow-other-keys)
+  (let ((matches (s-match "savannah\\.nongnu\\.org/\\([^/\\.]+\\)\\.git" url)))
+    (and matches (format "http://savannah.nongnu.org/projects/%s/" (second matches)))))
 
-(defun* muv::google-code-svn-kludge (package-name &key fetcher url &allow-other-keys)
-  (and (string-match "code\\.google\\.com" url)
-       (muv::svn-common-kludge url)))
+(defun* muv::google-code-hg-kludge (package-name &key fetcher url &allow-other-keys)
+  (let ((matches (s-match "^https?://code\\.google\\.com/p/[^/]+/" url)))
+    (first matches)))
+
+(defun* muv::google-code-kludge (package-name &key url &allow-other-keys)
+  (let ((matches (s-match "^https?://[^/]+\\.googlecode\\.com/" url)))
+    (first matches)))
+
+(defun* muv::gitorious-kludge (package-name &key url &allow-other-keys)
+  (let ((matches (s-match "gitorious\\.org/[^/]+/[^\\.]+" url)))
+    (and matches (format "https://%s" (first matches)))))
+
+(defun* muv::bitbucket-kludge (package-name &key url &allow-other-keys)
+  (let ((matches (s-match "bitbucket\\.org/[^/]+/[^/\\?]+" url)))
+    (and matches (format "https://%s" (first matches)))))
 
 (defun* muv::launchpad-kludge (package-name &key url &allow-other-keys)
   (and (s-starts-with-p "lp:" url)
        (s-replace "lp:" "https://launchpad.net/" url)))
 
+(defun* muv::sourceforge-svn-kludge (package-name &key url &allow-other-keys)
+  (let ((matches (s-match "svn\\.sourceforge\\.\\([^/]+\\)/svnroot/\\([^/]+\\)" url)))
+    (and matches (format "http://%s.sourceforge.%s/" (third matches) (second matches)))))
+
+;; TODO: sourceforge git kludge
+
 (defun* muv::svn-common-kludge (package-name &key fetcher url &allow-other-keys)
   (and (eq fetcher 'svn) (replace-regexp-in-string "svn/.*$" "" url)))
+
 (defun* muv::plain-url-kludge (package-name &key url &allow-other-keys)
   (read-from-minibuffer "Verify url: " url))
 
@@ -90,7 +109,10 @@
 (defcustom muv:url-kludges '(muv::github-kludge
                              muv::wiki-kludge
                              muv::savannah-kludge
-                             muv::google-code-svn-kludge
+                             muv::google-code-hg-kludge
+                             muv::google-code-kludge
+                             muv::gitorious-kludge
+                             muv::bitbucket-kludge
                              muv::launchpad-kludge
                              muv::svn-common-kludge
                              muv::plain-url-kludge)
@@ -109,8 +131,6 @@ returning the first non nil result."
   "Tries to guess the homepage URL of the package described by
 RECIPE."
   (apply 'muv::first-non-nil-result muv:url-kludges recipe))
-
-
 
 (defun muv (package-name)
   "`browse-url's (or at least tries to) the PACKAGE-NAME's homepage."
