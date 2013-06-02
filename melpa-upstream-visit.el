@@ -112,7 +112,7 @@ returning the first non nil result."
 (defun muv::url-from-recipe(recipe)
   "Tries to guess the homepage URL of the package described by
 RECIPE."
-  (apply 'muv::first-non-nil-result muv::url-kludges recipe))
+  (apply 'muv::first-non-nil-result muv:url-kludges recipe))
 
 
 
