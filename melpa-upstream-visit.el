@@ -45,7 +45,6 @@
 
 
 (provide 'melpa-upstream-visit)
-;;; melpa-upstream-visit.el ends here
 
 (defgroup melpa-upstream-visit nil
   "A set of kludges to visit a melpa-installed package's homepage."
@@ -129,3 +128,5 @@ RECIPE."
       (error "No package named '%s' can be found in MELPA." package-name))))
 
 (provide 'melpa-upstream-visit)
+
+;;; melpa-upstream-visit.el ends here
