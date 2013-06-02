@@ -53,16 +53,20 @@
   :group 'package)
 
 (defun muv::recipe-url (package)
+  "Returns the melpa recipe URL (github) for PACKAGE."
    (format "http://raw.github.com/milkypostman/melpa/master/recipes/%s" package))
 
 (defun muv::fetch-recipe (package)
+  "Returns the melpa recipe (as a list) for PACKAGE."
   (with-current-buffer (url-retrieve-synchronously
                         (muv::recipe-url package))
     (search-forward "(")
     (backward-char)
     (sexp-at-point)))
 
+
 ;;; Recipe -> URL kludges
+
 (defun* muv::github-kludge (package-name &key fetcher repo &allow-other-keys)
   (and (eq fetcher 'github) (format "https://github.com/%s" repo)))
 
@@ -72,18 +76,20 @@
 (defun* muv::savannah-kludge (package-name &key fetcher url &allow-other-keys)
   (and (string-match "savannah\\.nongnu\\.org" url)
        (format "savannah.nongnu.org/projects/%s/" package-name)))
+
 (defun* muv::google-code-svn-kludge (package-name &key fetcher url &allow-other-keys)
   (and (string-match "code\\.google\\.com" url)
        (muv::svn-common-kludge url)))
+
 (defun* muv::launchpad-kludge (package-name &key url &allow-other-keys)
   (and (s-starts-with-p "lp:" url)
        (s-replace "lp:" "https://launchpad.net/" url)))
-
 
 (defun* muv::svn-common-kludge (package-name &key fetcher url &allow-other-keys)
   (and (eq fetcher 'svn) (replace-regexp-in-string "svn/.*$" "" url)))
 (defun* muv::plain-url-kludge (package-name &key url &allow-other-keys)
   (read-from-minibuffer "Verify url: " url))
+
 
 (defcustom muv:url-kludges '(muv::github-kludge
                              muv::wiki-kludge
@@ -98,10 +104,14 @@
 
 
 (defun muv::first-non-nil-result (function-list &rest args)
+  "Applies the functions in FUNCTION-LIST to ARGS in order,
+returning the first non nil result."
   (or (apply (car function-list) args)
       (apply 'muv::first-non-nil-result (cdr function-list) args)))
 
 (defun muv::url-from-recipe(recipe)
+  "Tries to guess the homepage URL of the package described by
+RECIPE."
   (apply 'muv::first-non-nil-result muv::url-kludges recipe))
 
 
