@@ -43,10 +43,6 @@
 
 ;;; Code:
 
-
-
-(provide 'melpa-upstream-visit)
-
 (defgroup melpa-upstream-visit nil
   "A set of kludges to visit a melpa-installed package's homepage."
   :prefix "muv:"
