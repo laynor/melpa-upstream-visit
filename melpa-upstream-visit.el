@@ -5,6 +5,7 @@
 ;; Author: Alessandro Piras <laynor@gmail.com>
 ;; Keywords: convenience
 ;; Version: 0.1
+;; Package-Requires: ((s 1.6.0))
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -42,6 +43,10 @@
 ;; as the URL to be visited.
 
 ;;; Code:
+(eval-when-compile
+  (require 'cl))
+
+(require 's)
 
 (defgroup melpa-upstream-visit nil
   "A set of kludges to visit a melpa-installed package's homepage."
@@ -108,7 +113,7 @@
 
 (defcustom muv:url-kludges '(muv::github-kludge
                              muv::wiki-kludge
-                             muv::savannah-kludge
+                             muv::savannah-git-kludge
                              muv::google-code-hg-kludge
                              muv::google-code-kludge
                              muv::gitorious-kludge
@@ -132,6 +137,7 @@ returning the first non nil result."
 RECIPE."
   (apply 'muv::first-non-nil-result muv:url-kludges recipe))
 
+;;;###autoload;
 (defun muv (package-name)
   "`browse-url's (or at least tries to) the PACKAGE-NAME's homepage."
   (interactive (list (ido-completing-read "Visit package upstream: "
