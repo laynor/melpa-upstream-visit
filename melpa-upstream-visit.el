@@ -82,6 +82,11 @@
 (defun* muv::savannah-gnu-git-kludge (package-name &key fetcher url &allow-other-keys)
   (let ((matches (s-match "git\\.sv\\.gnu\\.org/\\([^/]+\\)\\.git" url)))
     (and matches (format "http://savannah.gnu.org/projects/%s/" (second matches)))))
+
+(defun* muv::naquadah-git-kludge (package-name &key url &allow-other-keys)
+  (let ((matches (s-match "git://git\\.naquadah\\.org/\\([^/]+\\.git\\)" url)))
+    (and matches (format "http://git.naquadah.org/?p=%s;a=summary" (second matches)))))
+
 (defun* muv::google-code-hg-kludge (package-name &key fetcher url &allow-other-keys)
   (let ((matches (s-match "^https?://code\\.google\\.com/p/[^/]+/" url)))
     (first matches)))
@@ -130,6 +135,7 @@
                              muv::launchpad-kludge
                              muv::sourceforge-svn-kludge
                              muv::repo-or-cz-kludge
+                             muv::naquadah-git-kludge
                              muv::svn-common-kludge
                              muv::plain-url-kludge)
   "Recipe to homepage url translation functions, applied in order."
