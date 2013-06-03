@@ -119,7 +119,9 @@
   (let ((matches (s-match "\\([^/\\]+\\)\\.git\\.sourceforge\\.\\([^/]+\\)/gitroot/\\1/\\1" url)))
     (and matches (format "http://%s.sourceforge.%s/" (second matches) (third matches)))))
 
-;; TODO: sourceforge git kludge
+(defun* muv::jblevins-kludge (package-name &key url &allow-other-keys)
+  (let ((matches (s-match "jblevins\\.org/git/\\([^/]+\\)\\.git" url)))
+    (and matches (format "http://jblevins.org/projects/%s" (second matches)))))
 
 (defun* muv::svn-common-kludge (package-name &key fetcher url &allow-other-keys)
   (and (eq fetcher 'svn) (replace-regexp-in-string "svn/.*$" "" url)))
@@ -141,6 +143,7 @@
                              muv::sourceforge-git-kludge
                              muv::repo-or-cz-kludge
                              muv::naquadah-git-kludge
+                             muv::jblevins-kludge
                              muv::svn-common-kludge
                              muv::plain-url-kludge)
   "Recipe to homepage url translation functions, applied in order."
