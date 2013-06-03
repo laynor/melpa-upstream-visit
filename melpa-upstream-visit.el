@@ -4,7 +4,8 @@
 
 ;; Author: Alessandro Piras <laynor@gmail.com>
 ;; Keywords: convenience
-;; Version: 0.1
+;; Version: 20130603.104
+;; X-Original-Version: 0.1
 ;; Package-Requires: ((s 1.6.0))
 
 ;; This program is free software; you can redistribute it and/or modify
@@ -61,6 +62,7 @@
   "Returns the melpa recipe (as a list) for PACKAGE."
   (with-current-buffer (url-retrieve-synchronously
                         (muv::recipe-url package))
+    (goto-char (point-min))
     (search-forward "(")
     (backward-char)
     (sexp-at-point)))
@@ -72,7 +74,7 @@
   (and (eq fetcher 'github) (format "https://github.com/%s" repo)))
 
 (defun* muv::wiki-kludge (package-name &key fetcher &allow-other-keys)
-  (and (eq fetcher 'github) (format "http://www.emacswiki.org/%s.el" package-name)))
+  (and (eq fetcher 'wiki) (format "http://www.emacswiki.org/%s.el" package-name)))
 
 (defun* muv::savannah-git-kludge (package-name &key fetcher url &allow-other-keys)
   (let ((matches (s-match "savannah\\.nongnu\\.org/\\([^/\\.]+\\)\\.git" url)))
@@ -119,6 +121,7 @@
                              muv::gitorious-kludge
                              muv::bitbucket-kludge
                              muv::launchpad-kludge
+                             muv::sourceforge-svn-kludge
                              muv::svn-common-kludge
                              muv::plain-url-kludge)
   "Recipe to homepage url translation functions, applied in order."
@@ -129,7 +132,7 @@
 (defun muv::first-non-nil-result (function-list &rest args)
   "Applies the functions in FUNCTION-LIST to ARGS in order,
 returning the first non nil result."
-  (or (apply (car function-list) args)
+  (or (ignore-errors (apply (car function-list) args))
       (apply 'muv::first-non-nil-result (cdr function-list) args)))
 
 (defun muv::url-from-recipe(recipe)
