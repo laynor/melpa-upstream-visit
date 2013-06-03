@@ -75,10 +75,13 @@
 (defun* muv::wiki-kludge (package-name &key fetcher &allow-other-keys)
   (and (eq fetcher 'wiki) (format "http://www.emacswiki.org/%s.el" package-name)))
 
-(defun* muv::savannah-git-kludge (package-name &key fetcher url &allow-other-keys)
-  (let ((matches (s-match "savannah\\.nongnu\\.org/\\([^/\\.]+\\)\\.git" url)))
+(defun* muv::savannah-nongnu-git-kludge (package-name &key fetcher url &allow-other-keys)
+  (let ((matches (s-match "savannah\\.nongnu\\.org/\\([^/]+\\)\\.git" url)))
     (and matches (format "http://savannah.nongnu.org/projects/%s/" (second matches)))))
 
+(defun* muv::savannah-gnu-git-kludge (package-name &key fetcher url &allow-other-keys)
+  (let ((matches (s-match "git\\.sv\\.gnu\\.org/\\([^/]+\\)\\.git" url)))
+    (and matches (format "http://savannah.gnu.org/projects/%s/" (second matches)))))
 (defun* muv::google-code-hg-kludge (package-name &key fetcher url &allow-other-keys)
   (let ((matches (s-match "^https?://code\\.google\\.com/p/[^/]+/" url)))
     (first matches)))
@@ -118,7 +121,8 @@
 
 (defcustom muv:url-kludges '(muv::github-kludge
                              muv::wiki-kludge
-                             muv::savannah-git-kludge
+                             muv::savannah-nongnu-git-kludge
+                             muv::savannah-gnu-git-kludge
                              muv::google-code-hg-kludge
                              muv::google-code-kludge
                              muv::gitorious-kludge
