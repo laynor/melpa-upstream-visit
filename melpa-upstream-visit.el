@@ -76,12 +76,19 @@
   (and (eq fetcher 'wiki) (format "http://www.emacswiki.org/%s.el" package-name)))
 
 (defun* muv::savannah-nongnu-git-kludge (package-name &key fetcher url &allow-other-keys)
-  (let ((matches (s-match "savannah\\.nongnu\\.org/\\([^/]+\\)\\.git" url)))
-    (and matches (format "http://savannah.nongnu.org/projects/%s/" (second matches)))))
+  (when (eq fetcher 'git)
+    (let ((matches (s-match "savannah\\.nongnu\\.org/\\([^/]+\\)\\.git" url)))
+      (and matches (format "http://savannah.nongnu.org/projects/%s/" (second matches))))))
 
 (defun* muv::savannah-gnu-git-kludge (package-name &key fetcher url &allow-other-keys)
-  (let ((matches (s-match "git\\.sv\\.gnu\\.org/\\([^/]+\\)\\.git" url)))
-    (and matches (format "http://savannah.gnu.org/projects/%s/" (second matches)))))
+  (when (eq fetcher 'git)
+    (let ((matches (s-match "git\\.\\(sv\\|savannah\\)\\.gnu\\.org/\\([^/]+\\)\\.git" url)))
+      (and matches (format "http://savannah.gnu.org/projects/%s/" (third matches))))))
+
+(defun* muv::savannah-gnu-bzr-kludge (package-name &key fetcher url &allow-other-keys)
+  (when (eq fetcher 'bzr)
+    (let ((matches (s-match "bzr\\.\\(sv\\|savannah\\)\\.gnu\\.org/r/\\([^/]+\\)/" url)))
+      (and matches (format "http://savannah.gnu.org/projects/%s/" (third matches))))))
 
 (defun* muv::naquadah-git-kludge (package-name &key url &allow-other-keys)
   (let ((matches (s-match "git://git\\.naquadah\\.org/\\([^/]+\\.git\\)" url)))
