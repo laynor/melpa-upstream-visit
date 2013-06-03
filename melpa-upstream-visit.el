@@ -99,6 +99,10 @@
   (and (s-starts-with-p "lp:" url)
        (s-replace "lp:" "https://launchpad.net/" url)))
 
+(defun* muv::repo-or-cz-kludge (package-name &key url &allow-other-keys)
+  (let ((matches (s-match "repo\\.or\\.cz/r/\\([^/\\.]+\\.git\\)" url)))
+    (format "http://repo.or.cz/w/%s" (second matches))))
+
 (defun* muv::sourceforge-svn-kludge (package-name &key url &allow-other-keys)
   (let ((matches (s-match "svn\\.sourceforge\\.\\([^/]+\\)/svnroot/\\([^/]+\\)" url)))
     (and matches (format "http://%s.sourceforge.%s/" (third matches) (second matches)))))
@@ -121,6 +125,7 @@
                              muv::bitbucket-kludge
                              muv::launchpad-kludge
                              muv::sourceforge-svn-kludge
+                             muv::repo-or-cz-kludge
                              muv::svn-common-kludge
                              muv::plain-url-kludge)
   "Recipe to homepage url translation functions, applied in order."
