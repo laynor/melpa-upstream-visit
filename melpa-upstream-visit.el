@@ -191,6 +191,12 @@ solve them!"
   :group 'melpa-upstream-visit
   :type 'boolean)
 
+(defcustom muv:enable-muv-button t
+  "Whether or not to enable a 'Visit homepage' button in the
+package description."
+  :group 'melpa-upstream-visit
+  :type 'boolean)
+
 (defun muv::first-non-nil-result (function-list &rest args)
   "Applies the functions in FUNCTION-LIST to ARGS in order,
 returning the first non nil result."
@@ -217,6 +223,21 @@ RECIPE."
     (if url
         (browse-url url)
       (error "No package named '%s' can be found in MELPA." package-name))))
+
+(defadvice describe-package-1 (after muv-describe-package-button-16 (package) activate)
+  (when muv:enable-muv-button
+    (lexical-let ((map (make-sparse-keymap))
+                  (p package))
+      (goto-char (point-min))
+      (end-of-line)
+      (when (< (point) 60)
+        (insert (s-repeat (- 60 (point)) " ")))
+      (insert-button "Visit Homepage (MUV)"
+                     'follow-link t
+                     'face 'custom-button
+                     'action (lambda (&rest args) (interactive) (muv p)))
+      )))
+
 
 (provide 'melpa-upstream-visit)
 
