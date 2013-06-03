@@ -141,6 +141,11 @@
 (defun* muv::joyful-kludge (package-name &key url &allow-other-keys)
   (let ((matches (s-match "https?://joyful\\.com/repos/[^/]+" url)))
     (and matches url)))
+
+(defun* muv::hub-darcs-kludge (package-name &key url &allow-other-keys)
+  (let ((matches (s-match "https?://hub\\.darcs\\.net/[^/]+/[^/]+" url)))
+    (and matches url)))
+
 (defun* muv::svn-common-kludge (package-name &key fetcher url &allow-other-keys)
   (and (eq fetcher 'svn) (replace-regexp-in-string "svn/.*$" "" url)))
 
@@ -165,6 +170,7 @@
                              muv::ryuslash-kludge
                              muv::logilab-kludge
                              muv::joyful-kludge
+                             muv::hub-darcs-kludge
                              muv::svn-common-kludge
                              muv::plain-url-kludge)
   "Recipe to homepage url translation functions, applied in order."
