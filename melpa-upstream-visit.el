@@ -130,6 +130,10 @@
   (let ((matches (s-match "jblevins\\.org/git/\\([^/]+\\)\\.git" url)))
     (and matches (format "http://jblevins.org/projects/%s" (second matches)))))
 
+(defun* muv::ryuslash-kludge (package-name &key url &allow-other-keys)
+  (let ((matches (s-match "git://ryuslash\\.org/\\([^/]+\\).git" url)))
+    (and matches (format "http://ryuslash.org/projects/%s.html" (second matches)))))
+
 (defun* muv::svn-common-kludge (package-name &key fetcher url &allow-other-keys)
   (and (eq fetcher 'svn) (replace-regexp-in-string "svn/.*$" "" url)))
 
@@ -151,6 +155,7 @@
                              muv::repo-or-cz-kludge
                              muv::naquadah-git-kludge
                              muv::jblevins-kludge
+                             muv::ryuslash-kludge
                              muv::svn-common-kludge
                              muv::plain-url-kludge)
   "Recipe to homepage url translation functions, applied in order."
