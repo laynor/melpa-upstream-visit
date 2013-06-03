@@ -140,7 +140,7 @@ returning the first non nil result."
 RECIPE."
   (apply 'muv::first-non-nil-result muv:url-kludges recipe))
 
-;;;###autoload;
+;;;###autoload
 (defun muv (package-name)
   "`browse-url's (or at least tries to) the PACKAGE-NAME's homepage."
   (interactive (list (ido-completing-read "Visit package upstream: "
