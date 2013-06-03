@@ -152,6 +152,11 @@
 (defun* muv::plain-url-kludge (package-name &key url &allow-other-keys)
   (read-from-minibuffer "Verify url: " url))
 
+(defcustom muv:user-url-kludges nil
+  "Recipe-to-homepage url translation functions, applied in order.
+These functions will be tried before the default kludges."
+  :group 'melpa-upstream-visit
+  :type '(repeat function))
 
 (defcustom muv:url-kludges '(muv::github-kludge
                              muv::wiki-kludge
@@ -173,21 +178,32 @@
                              muv::hub-darcs-kludge
                              muv::svn-common-kludge
                              muv::plain-url-kludge)
-  "Recipe to homepage url translation functions, applied in order."
+  "Default Recipe to homepage url translation functions, applied in order.
+Unless you know what you are doing, you should not touch this list, but
+customize muv:user-url-kludges instead."
   :group 'melpa-upstream-visit
   :type '(repeat function))
 
+(defcustom muv:debug nil
+  "Whether or not to print debug messages.
+Set this to t if you are having problems and want to help to
+solve them!"
+  :group 'melpa-upstream-visit
+  :type 'boolean)
 
 (defun muv::first-non-nil-result (function-list &rest args)
   "Applies the functions in FUNCTION-LIST to ARGS in order,
 returning the first non nil result."
-  (or (ignore-errors (apply (car function-list) args))
-      (apply 'muv::first-non-nil-result (cdr function-list) args)))
+  (let ((res (ignore-errors (apply (car function-list) args))))
+    (cond (res (when muv:debug
+                 (message "melpa-upstream-visit: %S returned %S" (car function-list) res))
+               res)
+          (t (apply 'muv::first-non-nil-result (cdr function-list) args)))))
 
 (defun muv::url-from-recipe(recipe)
   "Tries to guess the homepage URL of the package described by
 RECIPE."
-  (apply 'muv::first-non-nil-result muv:url-kludges recipe))
+  (apply 'muv::first-non-nil-result (append muv:user-url-kludges muv:url-kludges) recipe))
 
 ;;;###autoload
 (defun muv (package-name)
