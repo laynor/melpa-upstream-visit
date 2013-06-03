@@ -109,7 +109,7 @@
 
 (defun* muv::repo-or-cz-kludge (package-name &key url &allow-other-keys)
   (let ((matches (s-match "repo\\.or\\.cz/r/\\([^/\\.]+\\.git\\)" url)))
-    (format "http://repo.or.cz/w/%s" (second matches))))
+    (and matches (format "http://repo.or.cz/w/%s" (second matches)))))
 
 (defun* muv::sourceforge-svn-kludge (package-name &key url &allow-other-keys)
   (let ((matches (s-match "svn\\.sourceforge\\.\\([^/]+\\)/svnroot/\\([^/]+\\)" url)))
