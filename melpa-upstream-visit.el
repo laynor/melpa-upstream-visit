@@ -41,6 +41,16 @@
 ;; The kludges in the list are applied in order until one of them
 ;; returns non-nil. The first non-nil result is then interpreted
 ;; as the URL to be visited.
+;;
+;; Customization
+;; -------------
+;;
+;; If `muv:enable-muv-button' is non nil - the default - a
+;; Visit Homepage button will be show in the package description.
+;; The button can be disabled by customizing `muv:enable-muv-button',
+;; and can be customized via the customization variables
+;; `muv:button-face' and `muv:button-label'.
+
 
 ;;; Code:
 (eval-when-compile
@@ -52,6 +62,18 @@
   "A set of kludges to visit a melpa-installed package's homepage."
   :prefix "muv:"
   :group 'package)
+
+(defface muv:button-face
+  '((t (:inherit custom-button)))
+  "the face used to fontify the 'Visit Homepage' button"
+  :group 'melpa-upstream-visit)
+
+(defcustom muv:button-label "Visit Homepage"
+  "The Label of the 'Visit Homepage' button"
+  :group 'melpa-upstream-visit
+  :type 'string)
+
+
 
 (defun muv::recipe-url (package)
   "Returns the melpa recipe URL (github) for PACKAGE."
@@ -232,9 +254,9 @@ RECIPE."
       (end-of-line)
       (when (< (point) 60)
         (insert (s-repeat (- 60 (point)) " ")))
-      (insert-button "Visit Homepage (MUV)"
+      (insert-button muv:button-label
                      'follow-link t
-                     'face 'custom-button
+                     'face 'muv:button-face
                      'action (lambda (&rest args) (interactive) (muv p)))
       )))
 
