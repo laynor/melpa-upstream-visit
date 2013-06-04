@@ -246,7 +246,9 @@ RECIPE."
   (interactive (list (ido-completing-read "Visit package upstream: "
                                           (mapcar (lambda (el)
                                                     (symbol-name (car el)))
-                                                  package-archive-contents))))
+                                                  package-archive-contents)
+                                          nil t nil nil
+                                          (thing-at-point 'symbol))))
   (muv::fetch-recipe package-name
                      (lambda (recipe)
                        (let ((url (muv::url-from-recipe recipe)))
@@ -270,6 +272,5 @@ RECIPE."
 
 
 (provide 'melpa-upstream-visit)
-
 
 ;;; melpa-upstream-visit.el ends here
