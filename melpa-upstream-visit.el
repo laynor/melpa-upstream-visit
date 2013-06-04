@@ -243,12 +243,14 @@ RECIPE."
 ;;;###autoload
 (defun muv (package-name)
   "`browse-url's (or at least tries to) the PACKAGE-NAME's homepage."
-  (interactive (list (ido-completing-read "Visit package upstream: "
-                                          (mapcar (lambda (el)
-                                                    (symbol-name (car el)))
-                                                  package-archive-contents)
-                                          nil t nil nil
-                                          (thing-at-point 'symbol))))
+  (interactive (list (let ((tat (thing-at-point 'symbol))
+                           (packages (mapcar (lambda (el)
+                                               (symbol-name (car el)))
+                                             package-archive-contents)))
+                       (ido-completing-read "Visit package upstream: "
+                                            packages
+                                            nil t nil nil
+                                            (find tat packages :test 'equal)))))
   (muv::fetch-recipe package-name
                      (lambda (recipe)
                        (let ((url (muv::url-from-recipe recipe)))
