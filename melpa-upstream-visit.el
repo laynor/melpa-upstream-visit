@@ -4,7 +4,7 @@
 
 ;; Author: Alessandro Piras <laynor@gmail.com>
 ;; Keywords: convenience
-;; Version: 0.4
+;; Version: 0.5
 ;; Package-Requires: ((s "1.6.0"))
 
 ;; This program is free software; you can redistribute it and/or modify
