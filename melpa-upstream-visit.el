@@ -62,7 +62,7 @@
   (require 'cl))
 
 (require 's)
-(require 'custom)
+(require 'cus-edit)
 
 (defgroup melpa-upstream-visit nil
   "A set of kludges to visit a melpa-installed package's homepage."
