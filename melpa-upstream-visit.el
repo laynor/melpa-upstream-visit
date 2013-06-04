@@ -50,6 +50,11 @@
 ;; The button can be disabled by customizing `muv:enable-muv-button',
 ;; and can be customized via the customization variables
 ;; `muv:button-face' and `muv:button-label'.
+;;
+;; Thank yous:
+;; -- milkypostman for melpa :-)
+;; -- dgutov for thing-at-point integratoin
+
 
 
 ;;; Code:
