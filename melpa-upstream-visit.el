@@ -62,6 +62,7 @@
   (require 'cl))
 
 (require 's)
+(require 'custom)
 
 (defgroup melpa-upstream-visit nil
   "A set of kludges to visit a melpa-installed package's homepage."
@@ -117,11 +118,13 @@ solve them!"
   :group 'melpa-upstream-visit
   :type 'boolean)
 
-(defcustom muv:enable-muv-button t
+(defcustom muv:button-location 'package-name
   "Whether or not to enable a 'Visit homepage' button in the
 package description."
   :group 'melpa-upstream-visit
-  :type 'boolean)
+  :type '(choice (const :tag "Off" nil)
+                 (const :tag "Top-Right" top-right)
+                 (const :tag "Make the package name a button" package-name)))
 
 
 ;;; Recipe -> URL kludges
@@ -264,20 +267,35 @@ RECIPE."
                            (error "No package named '%s' can be found in MELPA." package-name))))))
 
 
-(defadvice describe-package-1 (after muv-describe-package-button-16 (package) activate)
-  (lexical-let ((p package))
-    (when muv:enable-muv-button
+(defadvice describe-package-1 (after muv-describe-package-button  activate)
+  (save-excursion
+    (when (not (null muv:button-location))
       (goto-char (point-min))
-      (end-of-line)
-      (when (< (point) 60)
-        (insert (s-repeat (- 60 (point)) " ")))
-      (insert-button muv:button-label
-                     'follow-link t
-                     'face 'muv:button-face
-                     'action (lambda (&rest args) (interactive) (muv p)))
-      )))
+      (let* ((package-name (thing-at-point 'symbol))
+             (window-width (window-width (selected-window)))
+             (action (lexical-let ((p package-name))
+                       (lambda (&rest args)
+                         (interactive)
+                         (muv p)))))
+        (case muv:button-location
+          (package-name (let ((tat (thing-at-point 'symbol)))
+                          (make-button (point-min) (1+ (length package-name))
+                                       'follow-link t
+                                       'face 'muv:button-face
+                                       'action action)))
+          (top-right (end-of-line)
+                     (let ((expected-button-position (- window-width (length muv:button-label))))
+                       (when (< (point) (- window-width (length muv:button-label)))
+                         (insert (s-repeat (-  expected-button-position (point)) " ")))
+                       (insert-button muv:button-label
+                                      'follow-link t
+                                      'face 'muv:button-face
+                                      'action action))))))))
 
 
+(setq muv:button-location 'top-right)
 (provide 'melpa-upstream-visit)
+                 ;; (when (< (point) 60)
+                 ;;   (insert (s-repeat (- 60 (point)) " ")))
 
 ;;; melpa-upstream-visit.el ends here
