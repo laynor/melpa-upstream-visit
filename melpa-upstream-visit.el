@@ -284,13 +284,15 @@ RECIPE."
                                        'face 'muv:button-face
                                        'action action)))
           (top-right (move-end-of-line nil)
-                     (let ((expected-button-position (- window-width (length muv:button-label))))
-                       (when (< (point) (- window-width (length muv:button-label)))
-                         (insert (s-repeat (-  expected-button-position (point)) " ")))
-                       (insert-button muv:button-label
-                                      'follow-link t
-                                      'face 'muv:button-face
-                                      'action action))))))))
+                     (insert
+                      (propertize " "
+                                  'display `(space :align-to
+                                                   (- right ,(string-width
+                                                              (concat " " muv:button-label))))))
+                     (insert-button muv:button-label
+                                    'follow-link t
+                                    'face 'muv:button-face
+                                    'action action)))))))
 
 
 (provide 'melpa-upstream-visit)
