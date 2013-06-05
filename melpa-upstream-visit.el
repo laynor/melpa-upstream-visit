@@ -293,7 +293,6 @@ RECIPE."
                                       'action action))))))))
 
 
-(setq muv:button-location 'top-right)
 (provide 'melpa-upstream-visit)
                  ;; (when (< (point) 60)
                  ;;   (insert (s-repeat (- 60 (point)) " ")))
