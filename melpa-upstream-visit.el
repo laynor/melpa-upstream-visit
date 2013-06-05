@@ -118,7 +118,7 @@ solve them!"
   :group 'melpa-upstream-visit
   :type 'boolean)
 
-(defcustom muv:button-location 'package-name
+(defcustom muv:button-location 'top-right
   "Whether or not to enable a 'Visit homepage' button in the
 package description."
   :group 'melpa-upstream-visit
@@ -283,7 +283,7 @@ RECIPE."
                                        'follow-link t
                                        'face 'muv:button-face
                                        'action action)))
-          (top-right (end-of-line)
+          (top-right (move-end-of-line nil)
                      (let ((expected-button-position (- window-width (length muv:button-label))))
                        (when (< (point) (- window-width (length muv:button-label)))
                          (insert (s-repeat (-  expected-button-position (point)) " ")))
@@ -294,7 +294,5 @@ RECIPE."
 
 
 (provide 'melpa-upstream-visit)
-                 ;; (when (< (point) 60)
-                 ;;   (insert (s-repeat (- 60 (point)) " ")))
 
 ;;; melpa-upstream-visit.el ends here
