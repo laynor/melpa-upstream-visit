@@ -62,7 +62,6 @@
   (require 'cl))
 
 (require 's)
-(require 'cus-edit)
 
 (defgroup melpa-upstream-visit nil
   "A set of kludges to visit a melpa-installed package's homepage."
@@ -70,7 +69,9 @@
   :group 'package)
 
 (defface muv:button-face
-  '((t (:inherit custom-button)))
+  '((((type x w32 ns) (class color))
+     :box (:line-width 2 :style released-button)
+     :background "lightgrey" :foreground "black"))
   "the face used to fontify the 'Visit Homepage' button"
   :group 'melpa-upstream-visit)
 
