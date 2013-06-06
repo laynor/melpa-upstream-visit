@@ -53,7 +53,7 @@
 ;;
 ;; Thank yous:
 ;; -- milkypostman for melpa :-)
-;; -- dgutov for thing-at-point integratoin
+;; -- dgutov for thing-at-point integration
 
 
 
