@@ -130,24 +130,32 @@ package description."
 
 ;;; Recipe -> URL kludges
 
+(defun muv::as-string (symbol-or-string)
+  (etypecase symbol-or-string
+      (symbol (symbol-name symbol-or-string))
+      (string symbol-or-string)))
+
+(defun muv::compare-fetcher (fetcher1 fetcher2)
+  (equal (muv::as-string fetcher1) (muv::as-string fetcher2)))
+
 (defun* muv::github-kludge (_package-name &key fetcher repo &allow-other-keys)
-  (and (eq fetcher 'github) (format "https://github.com/%s" repo)))
+  (and (muv::compare-fetcher fetcher 'github) (format "https://github.com/%s" repo)))
 
 (defun* muv::wiki-kludge (package-name &key fetcher &allow-other-keys)
-  (and (eq fetcher 'wiki) (format "http://www.emacswiki.org/%s.el" package-name)))
+  (and (muv::compare-fetcher fetcher 'wiki) (format "http://www.emacswiki.org/%s.el" package-name)))
 
 (defun* muv::savannah-nongnu-git-kludge (_package-name &key fetcher url &allow-other-keys)
-  (when (eq fetcher 'git)
+  (when (muv::compare-fetcher fetcher 'git)
     (let ((matches (s-match "savannah\\.nongnu\\.org/\\([^/]+\\)\\.git" url)))
       (and matches (format "http://savannah.nongnu.org/projects/%s/" (second matches))))))
 
 (defun* muv::savannah-gnu-git-kludge (_package-name &key fetcher url &allow-other-keys)
-  (when (eq fetcher 'git)
+  (when (muv::compare-fetcher fetcher 'git)
     (let ((matches (s-match "git\\.\\(sv\\|savannah\\)\\.gnu\\.org/\\([^/]+\\)\\.git" url)))
       (and matches (format "http://savannah.gnu.org/projects/%s/" (third matches))))))
 
 (defun* muv::savannah-gnu-bzr-kludge (_package-name &key fetcher url &allow-other-keys)
-  (when (eq fetcher 'bzr)
+  (when (muv::compare-fetcher fetcher 'bzr)
     (let ((matches (s-match "bzr\\.\\(sv\\|savannah\\)\\.gnu\\.org/r/\\([^/]+\\)/" url)))
       (and matches (format "http://savannah.gnu.org/projects/%s/" (third matches))))))
 
@@ -208,7 +216,7 @@ package description."
     (and matches url)))
 
 (defun* muv::svn-common-kludge (_package-name &key fetcher url &allow-other-keys)
-  (and (eq fetcher 'svn) (replace-regexp-in-string "svn/.*$" "" url)))
+  (and (muv::compare-fetcher fetcher 'svn) (replace-regexp-in-string "svn/.*$" "" url)))
 
 (defun* muv::plain-url-kludge (_package-name &key url &allow-other-keys)
   (read-from-minibuffer "Verify url: " url))
