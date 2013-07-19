@@ -127,6 +127,12 @@ package description."
                  (const :tag "Top-Right" top-right)
                  (const :tag "Make the package name a button" package-name)))
 
+(defcustom muv:completing-read-function 'ido-completing-read
+  "Function to be called when requesting input from the user."
+  :group 'melpa-upstream-visit
+  :type '(radio (function-item completing-read)
+                (function :tag "Other")))
+
 
 ;;; Recipe -> URL kludges
 
@@ -264,10 +270,11 @@ RECIPE."
                            (packages (mapcar (lambda (el)
                                                (symbol-name (car el)))
                                              package-archive-contents)))
-                       (ido-completing-read "Visit package upstream: "
-                                            packages
-                                            nil t nil nil
-                                            (find tat packages :test 'equal)))))
+                       (funcall muv:completing-read-function
+                                "Visit package upstream: "
+                                packages
+                                nil t nil nil
+                                (find tat packages :test 'equal)))))
   (muv::fetch-recipe package-name
                      (lambda (recipe)
                        (let ((url (muv::url-from-recipe recipe)))
